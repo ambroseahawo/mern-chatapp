@@ -14,6 +14,7 @@ const Messenger = () => {
   const [messages, setMessages] = useState([])
   const [newMessage, setNewMessage] = useState('')
   const [arrivalMessage, setArrivalMessage] = useState(null)
+  const [onlineUsers, setOnlineUsers] = useState([])
   const socket = useRef()
   const { user } = useContext(AuthContext)
   const scrollRef = useRef()
@@ -38,9 +39,9 @@ const Messenger = () => {
   useEffect(() =>{
     socket.current.emit("addUser", user._id)
     socket.current.on("getUsers", users =>{
-      console.log(users)
+      setOnlineUsers(user.followings.filter((f) => users.some((u) => u.userId === f)))
     })
-  }, [user._id])
+  }, [user])
 
   // useEffect(() =>{
   //   socket?.on("welcome", message =>{
@@ -147,7 +148,11 @@ const Messenger = () => {
         </div>
         <div className="chatOnline">
           <div className="chatOnlineWrapper">
-            <ChatOnline />
+            <ChatOnline 
+              onlineUsers={ onlineUsers } 
+              currentId={ user._id } 
+              setCurrentChat={ setCurrentChat }
+            />
           </div>
         </div>
       </div>
